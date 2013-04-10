@@ -1,0 +1,21 @@
+.controls {
+	position: fixed;
+	z-index: 10;
+	bottom: 65px;
+	left: 50%;
+	width: 300px;
+	margin-left: -150px;
+	background-color: rgba(0,0,0,0.7);
+}
+
+.control {
+	display: table-cell;
+	padding: 15px;
+	color: rgba(255,255,255,0.7);
+	cursor: pointer;
+}
+
+.control:hover {
+	background-color: rgba(100,0,0,0.7);
+	color: white;
+}
