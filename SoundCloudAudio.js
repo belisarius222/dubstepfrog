@@ -92,7 +92,8 @@ var SoundCloudAudio = Class.extend({
 				}
 		 	});
 	    }
-    
+
+    	SCLoadedCallback();
 	},
 
 	updateInfoBox: function(info) {

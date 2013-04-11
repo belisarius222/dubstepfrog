@@ -1,10 +1,17 @@
-.controls {
+#canvas {
 	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: -10;
+}
+
+.controls {
+	//float: right;
 	z-index: 10;
-	bottom: 65px;
-	left: 50%;
+	//bottom: 65px;
+	//left: 50%;
 	width: 300px;
-	margin-left: -150px;
+	//margin-left: -150px;
 	background-color: rgba(0,0,0,0.7);
 }
 
@@ -18,4 +25,13 @@
 .control:hover {
 	background-color: rgba(100,0,0,0.7);
 	color: white;
+}
+
+#album-cover-container {
+	float: right;
+	width: 300px;
+}
+
+#album-cover {
+	width: 300px;
 }

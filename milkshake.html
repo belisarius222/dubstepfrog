@@ -24,11 +24,55 @@
 <html>
 
   <head>
+    <link href='http://fonts.googleapis.com/css?family=Nosifer|Codystar|Audiowide|Special+Elite' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' type='text/css' href='controls.css'/>
 
     <script type="text/javascript" src="milkshake.js"></script>
 
     <script type="text/javascript" src="jquery.min.js"></script>
+
+
+
+    <style>
+    body {
+      background-color: black;
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      margin-top: 0;
+      padding-top: 0;
+    }
+    .container {
+      margin-top: 0;
+      padding-top: 0;
+      margin-left: auto;
+      margin-right: auto;
+      width: 960px;
+    }
+    .title {
+      z-index: -4;
+      font-family: 'Nosifer'; /*  'Codystar' 'Audiowide' 'Special Elite' */
+      font-size: 40px;
+      color: #55ff00;
+      text-shadow: 0    0     20px  black, 
+            5px   -10px   30px  #eefc05, 
+            -5px  -20px   40px  #affe14, 
+            5px   -40px   50px  #7ce62c,
+             
+            5px   10px  30px  #eefc05, 
+            -5px  20px  40px  #affe14, 
+            5px   40px  50px  #7ce62c,
+             
+            -5px  60px  60px  #4dd606, 
+            0     80px  70px  #37f716, 
+            5px   90px  80px  #15fb0e;
+      border-bottom: solid 4px #55ff00;
+      overflow: hidden;
+    }
+    #toad {
+      z-index: 10;
+    }
+    </style>
 
     <style type="text/css">
     body {
@@ -45,10 +89,57 @@
     }
     </style>
 
+    <script type='text/javascript' src='js/jquery.textgrad0.js'></script>
+
+<script type='text/javascript'>
+
+$(document).ready(function () {
+  var i = 0; // Used to keep track of which image we're looking at
+  changePicture = function(){
+    i = i < 3 ? i + 1 : 0;
+    $("#toad").attr('src',"img/hypnotoad/000#.gif".replace("#", i));
+  }
+  timer = setInterval(changePicture,100);
+  clearInterval(timer);
+
+  $('#scanner').spanize('anim',1);
+  
+  var keepScanning = false;
+  var ltr = true; // left to right
+
+  scan = function() {
+    
+    $('#scanner').textscan({
+      spanize : -1,
+        unspanize : -1,
+        direction : (ltr)? '->' : '<-',
+        spanClass : 'anim',
+        initColor : '000',
+        endColor : '000',
+        transColor : '0F0',
+      cb : function() { 
+        if(keepScanning) {
+          ltr = !ltr;
+          scan();
+        }
+      }
+    });
+  }
+});
+
+</script>
+
     <script>
+
     controls = {
-      playing: true,
+      playing: false,
+      firstPlay: true,
       next: function() {
+        if (milkAudio.trackPos >= milkAudio.tracks.length - 1) {
+          console.log('no more tracks...');
+          return;
+        }
+
         this.stop();
         milkAudio.trackPos++;
         this.play();   
@@ -66,18 +157,38 @@
       pause: function () {
         this.playing = false;
         soundManager.pauseAll();
+        clearInterval(timer);
+        keepScanning = false;
       },
       stop: function () {
         this.playing = false;
         soundManager.stopAll();
       },
       play: function () {
+        if (this.firstPlay) {
+          milk.shake('canvas');
+          this.firstPlay = false;
+          return;
+        }
+        if (! milkAudio || typeof milkAudio.trackPos === 'undefined') {
+          return;
+        }
         if (this.playing) {
           console.log('already playing...');
           return;
         }
         this.playing = true;
-        soundManager.play(milkAudio.tracks[milkAudio.trackPos]);
+
+        timer = setInterval(changePicture,50);
+        keepScanning = true;
+        scan();
+        var pos = milkAudio.trackPos;
+        var src = milkAudio.songs[pos].artwork_url;
+        src = src.replace("-large","-t500x500");
+        console.log('src: ');
+        console.log(src);
+        $('#album-cover').attr('src',src);
+        soundManager.play(milkAudio.tracks[pos]);
       },
       togglePause: function() {
         if (this.playing) {
@@ -89,15 +200,43 @@
       },
     };
 
-    $(document).ready(function() {
+    var setPlayButtonText = function(str) {
+      $('.control.play').html(str);
+    };
 
-      //controls.pause();
+    SCLoadedCallback = function() {
+      console.log('loaded SC');
+      setPlayButtonText('Pause');
+      controls.firstPlay = false;
+      controls.playing = true;
+
+      var pos = milkAudio.trackPos;
+      var src = milkAudio.songs[pos].artwork_url;
+      src = src.replace("-large","-t500x500");
+      console.log('src: ');
+      console.log(src);
+      $('#album-cover').attr('src',src);      
+
+      //removeChrome();
+      chromeTimeout = null;
+      $("body").mousemove(function() {
+        clearTimeout(chromeTimeout);
+        showChrome();
+        chromeTimeout = setTimeout(removeChrome, 4000);
+      }).mouseleave(function() {
+        clearTimeout(chromeTimeout);
+        removeChrome(); 
+      });
+    };
+
+    $(document).ready(function() {
 
       $('.control.play').click(function(){
         controls.togglePause();
         var newButtonText = controls.playing? 'Pause' : 'Play';
-        $(this).html(newButtonText);
+        setPlayButtonText(newButtonText);
       });
+
       $('.control.previous').click(function(){
         controls.previous();
       });
@@ -105,29 +244,54 @@
         controls.next();
       });
 
+      removeChrome = function() {
+        if (controls.playing)
+          $('.title,#toad,.controls,#album-cover,#info-box').fadeOut();
+      }
+
+      showChrome = function() {
+        $('.title,#toad,.controls,#album-cover,#info-box').show();
+      };
+
     });
     </script>
 
   </head>
 
-  <body onload="milk.shake('canvas');">
+  <body>
+    <div class='container'>
+      <center>
+        <div class='title'>
+          <span id='scanner'>ALL GLORY TO THE DUBSTEP FROG</span>
+        </div>
+      </center>
+      <div style='float: left'>
+        <img id='toad' src='img/hypnotoad/0000.gif' alt='' />
+      </div>
+      <div style='float: right; margin-top: 4px'> 
+        <div class='controls'>
+          <div class='control previous'>
+            Previous Track
+          </div>
+          <div class='control play'>
+            Play
+          </div>
+          <div class='control next'>
+            Next Track
+          </div>
+        </div>
+        <div id='album-cover-container'>
+          <img id='album-cover'/>   
+        </div>
+      </div>
+    </div>
+
     <canvas id="canvas">
       Sorry, you need a more updated browser to see this, because it uses WebGL.
       Try the latest <a href="http://www.google.com/chrome">Google Chrome</a>
       or <a href="http://www.mozilla.org/firefox">Firefox<a/>.
     </canvas>
 
-    <div class='controls'>
-      <div class='control previous'>
-        Previous Track
-      </div>
-      <div class='control play'>
-        Pause
-      </div>
-      <div class='control next'>
-        Next Track
-      </div>
-    </div>
   </body>
 
 </html>

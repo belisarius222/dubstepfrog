@@ -15,6 +15,7 @@
 /* jslint regexp: true, sloppy: true, white: true, nomen: true, plusplus: true */
 
 (function(window) {
+console.log('initializing soundManager...');
 var soundManager = null;
 function SoundManager(smURL, smID) {
   this.flashVersion = 8;
@@ -91,6 +92,7 @@ function SoundManager(smURL, smID) {
   };
   this.movieID = 'sm2-container';
   this.id = (smID || 'sm2movie');
+  console.log(this.id);
   this.swfCSS = {
     'swfBox': 'sm2-object-box',
     'swfDefault': 'movieContainer',
@@ -2156,6 +2158,7 @@ function SoundManager(smURL, smID) {
 // SM2_DEFER details: http://www.schillmania.com/projects/soundmanager2/doc/getstarted/#lazy-loading
 if (typeof SM2_DEFER === 'undefined' || !SM2_DEFER) {
   soundManager = new SoundManager();
+  console.log('created soundManager.');
 }
 window.SoundManager = SoundManager;
 window.soundManager = soundManager;

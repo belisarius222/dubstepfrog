@@ -167,6 +167,7 @@ var Shaker = Class.extend({
 	createInfoBox: function() {
 
 	    this.infoBox = document.createElement('div');
+	    this.infoBox.id = 'info-box';
             this.infoBox.style.position = "absolute";
             this.infoBox.style.height = "0px";
             this.infoBox.style.width = (canvas.width - 80) + "px";
